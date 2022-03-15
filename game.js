@@ -1,5 +1,9 @@
 const ctx = document.getElementById('screen').getContext('2d');
-const gameObjects = [{ type: 'player', x: 30, y: 50 }];
+let prevFps = 0;
+let fps = 0;
+let prevTime = Date.now();
+
+const gameObjects = [{ type: 'player', x: 30, y: 50 },{type: 'fps'}];
 
 const functions = {
   player: (obj) => {
@@ -11,6 +15,10 @@ const functions = {
     ctx.lineTo(obj.x, obj.y + 20);
     ctx.stroke();
   },
+  fps: (obj) =>{
+    // FPSを画面に描画する
+    ctx.fillText('fps: ' + prevFps.toString(), 10, 15);
+  }
 };
 
 function gameLoop() {
@@ -22,6 +30,13 @@ function gameLoop() {
   });
   const end = Date.now();
   setTimeout(gameLoop, 33 - (end - begin)); // 0.33msから実際かかった時間を引いた秒数待つ
+  if (begin - prevTime > 1000){
+    prevFps = fps;
+    fps = 1;
+    prevTime = begin;
+  } else {
+    fps++;
+  }
 }
 
 gameLoop();
