@@ -42,7 +42,7 @@ function gameLoop() {
    ctx.clearRect(0, 0, 320, 240); // 画面を消去
   if (gamePadIndex !== undefined) {
     // パッドが接続されていれば尿力を取得する
-    const gamepad = navigator.getGamepads()[gamePadIndex];
+    const gamePad = navigator.getGamepads()[gamePadIndex];
     gameInput = {
       left: (gamePad.axes[0] < -0.5),
       right: (gamePad.axes[0] > 0.5),
