@@ -53,15 +53,50 @@ window.addEventListener(
   false
 );
 
-const functions = {
-  player: (obj) => {
-    obj.x += 0.2;
 
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(obj.x, obj.y);
-    ctx.lineTo(obj.x, obj.y + 20);
-    ctx.stroke();
+
+addEventListener('gamepadconnected', (e) => {
+  // パッドが接続されたらインデックスを保存
+  gamePadIndex = e.gamepad.index;
+});
+const HORIZON_HIGHT = 200;
+
+
+const gameObjects = [{ type: 'player', x: 30, y: HORIZON_HIGHT, ay: 0 },
+                     { type: 'fps'},
+                     { type: 'gameInput'}
+];
+
+const functions = {
+  player: function(obj) {
+      //地面より上にいれば下方向に加速させる
+      if(obj.y < HORIZON_HIGHT) {
+          obj.ay += 0.5;
+      }
+
+      // 入力に応じてキャラを動かす
+      if (gameInput.left){
+          obj.x -=3
+      }
+      if (gameInput.right){
+          obj.x +=3
+      }
+      if (gameInput.a && obj.y == HORIZON_HEIGHT) {
+          obj.ay -= 8;
+      }
+
+      obj.y +=  obj.ay;
+      // 地面に着いたら下方向の加速を止める
+      if (obj.y > HORIZON_HEIGHT) {
+        obj.ay = 0;
+        obj.y = HORIZON_HEIGHT;
+      }
+
+      ctx.beginPath();
+      ctx.lineWidth = 1;
+      ctx.moveTo(obj.x, obj.y);
+      ctx.lineTo(obj.x, obj.y - 20);
+      ctx.stroke();
   },
   fps: (obj) =>{
     // FPSを画面に描画する
@@ -79,14 +114,6 @@ const functions = {
     ctx.fillText('controller: ' + s, 10, 30);
   }
 };
-
-addEventListener('gamepadconnected', (e) => {
-  // パッドが接続されたらインデックスを保存
-  gamePadIndex = e.gamepad.index;
-});
-
-const gameObjects = [{ type: 'player', x: 30, y: 50 },{ type: 'fps'},{ type: 'gameInput'}];
-
 function gameLoop() {
   const begin = Date.now();
   ctx.clearRect(0, 0, 320, 240); // 画面を消去
